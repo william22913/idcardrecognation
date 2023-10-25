@@ -33,6 +33,51 @@ def vertical_projection(picture, threshold):
     return range_y
 
 
+def horizontal_projection_header(picture, threshold):
+    counter = 0
+    node_x = 0
+
+    height, width = picture.shape
+    histogram_y = []
+    for x in range(0, height):
+        counter = 0
+        for y in range(0, width):
+            if picture[x][y] == 0:
+                counter = counter + 1
+        histogram_y.append(counter)
+
+    range_x = []
+    start_point = 0
+    end_point = 0
+    for x in range(0, len(histogram_y) - 1):
+        if histogram_y[x] >= threshold:
+            if start_point == 0:
+                start_point = x
+
+        if histogram_y[x + 1] > threshold:
+            if start_point != 0:
+                end_point = x + 1
+        else:
+            if start_point != 0:
+                range_x.append((start_point, end_point))
+                start_point = 0
+                end_point = 0
+
+    for x in range(0, len(range_x)):
+        _range = range_x[x][1] - range_x[x][0]
+        if range_x[x][1] == 0:
+            return range_x[x-1][1]
+        if _range > 50:
+            return range_x[x][0]-1
+        elif _range >= 3:
+            counter = counter + 1
+            if counter == 3:
+                node_x = range_x[x][1]
+                break
+
+    return node_x
+
+
 def horizontal_projection(picture, threshold):
     height, width = picture.shape
     histogram_y = []

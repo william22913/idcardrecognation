@@ -1,58 +1,51 @@
 import cv2
-import numpy as np
-from service.ProfileProjection import vertical_projection, horizontal_projection, vertical_projection_remove_picture
+import numpy
+from service.ProfileProjection import vertical_projection_remove_picture, horizontal_projection_header
 from service.AdjustBrightness import adjust_brightness
-from service.SkewDetection import fix_skew
-from service.Clasification import do_classification
+from service.Features import get_features
+import base64
 
-image = cv2.imread('Sample KTP/85lya0a0.bmp')
+image = cv2.imread('Sample KTP/Scan+KTP.JPG')
 resize = cv2.resize(image, (800, 400), interpolation=cv2.INTER_AREA)
+
 resize = adjust_brightness(resize, 340, 180)
 cv2.imshow('original', resize)
 cv2.waitKey()
 
-grey = cv2.cvtColor(resize, cv2.COLOR_BGR2GRAY)
+grey = cv2.cvtColor(resize, cv2.COLOR_RGB2GRAY)
 ret, binary = cv2.threshold(grey, 0, 255, cv2.THRESH_OTSU)
-skewFix = binary # fix_skew()
-
-cv2.imshow('skewFix', skewFix)
-cv2.waitKey()
-height, width = skewFix.shape
+height, width = binary.shape
 
 # Removing KTP Picture
-rangeY = vertical_projection_remove_picture(skewFix)
-withoutPicture = skewFix[:, 0:rangeY]
+rangeY = vertical_projection_remove_picture(binary)
+withoutPicture = binary[:, 0:rangeY+10]
 cv2.imshow('remove photo', withoutPicture)
 cv2.waitKey()
 
-# Horizontal Projection
-rangeX = horizontal_projection(withoutPicture, 5)
+node_x = horizontal_projection_header(binary, 5)
+used_photo = numpy.full((400, 800, 3), dtype=numpy.uint8, fill_value=255)
 
-# Finding Start Point
-start = 0
-for i in range(0, len(rangeX)):
-    temp = withoutPicture[rangeX[i][0]:rangeX[i][1], :]
-    tempVertical = vertical_projection(temp, 0)
-    if len(tempVertical) >= 5:
-        if (tempVertical[0][1] - tempVertical[0][0]) < 20:
-            start = i
-            break
+header = resize[0:node_x+2, :, :]
+body = resize[node_x:, 0:rangeY-3, :]
+header_height, header_width, _ = header.shape
+body_height, body_width, _ = body.shape
 
-print("Start Point : ", start)
-# Getting NIK
-NIK = withoutPicture[rangeX[start + 2][0]:rangeX[start + 2][1], :]
-cv2.imshow('NIK', NIK)
+# used_photo = body
+used_photo[0:header_height, 0:header_width, :] = header
+used_photo[header_height-2:body_height+header_height, 0:body_width, :] = body
 
-# Vertical Projection of NIK
-rangeY_NIK = vertical_projection(NIK, 1)
+saturation, entropy, intensity, lbp = get_features(resize)
 
-# Slice NIK part and get all number of NIK
-result = []
-for i in range(len(rangeY_NIK) - 16, len(rangeY_NIK)):
-    result.append(do_classification(NIK[:, rangeY_NIK[i][0]:rangeY_NIK[i][1]]))
+print('entropy', entropy, '\nlbp_image', lbp, '\nintensity', intensity, '\nsaturation', saturation)
 
-result = np.array(result)
-print("Nomor NIK : ", result.flatten())
-
+cv2.imshow('used', used_photo)
+# cv2.imshow('header', header)
+# cv2.imshow('body', body)
 cv2.waitKey()
-cv2.destroyAllWindows()
+
+# file_data = cv2.imencode('.jpg', used_photo)
+# f = open("base64.txt", "a")
+# data = base64.b64encode(file_data[1]).decode('utf-8')
+#
+# f.write(data)
+# f.close()

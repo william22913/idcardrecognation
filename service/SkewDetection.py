@@ -4,7 +4,7 @@ from scipy.ndimage import interpolation as inter
 
 def fix_skew(bin_img):
     delta = 0.5
-    limit = 1
+    limit = 0.8
     angles = np.arange(-limit, limit + delta, delta)
     scores = []
     for angle in angles:
