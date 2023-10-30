@@ -6,9 +6,22 @@ from skimage.feature import graycomatrix
 from skimage.feature import graycoprops
 
 
-def get_features(resize):
+class Features:
+    def __init__(self, entropy, lbp, intensity, saturation, contrast, correlation, energy, homogeneity):
+        self.entropy = entropy
+        self.lbp = lbp
+        self.intensity = intensity
+        self.saturation = saturation
+        self.contrast = contrast
+        self.correlation = correlation
+        self.energy = energy
+        self.homogeneity = homogeneity
+
+
+def get_features(resize, show_image=False):
     clip = cv2.cvtColor(adjust_brightness(resize, 150, 250), cv2.COLOR_RGB2GRAY)
-    cv2.imshow('clip', clip)
+    if show_image:
+        cv2.imshow('clip', clip)
 
     red = resize[:, :, 0]
     green = resize[:, :, 1]
@@ -56,7 +69,14 @@ def get_features(resize):
     correlation = graycoprops(co_matrix, 'correlation')
     energy = graycoprops(co_matrix, 'energy')
     homogeneity = graycoprops(co_matrix, 'homogeneity')
+    cv2.waitKey()
 
-    print("contrast", contrast, "correlation", correlation, "energy", energy, "homogeneity", homogeneity)
-
-    return saturation, entropy, intensity, lbp
+    return [
+        numpy.float32(entropy),
+        numpy.float32(lbp),
+        numpy.float32(intensity),
+        numpy.float32(saturation),
+        numpy.float32(contrast[0][0]),
+        numpy.float32(correlation[0][0]),
+        numpy.float32(energy[0][0]),
+        numpy.float32(homogeneity[0][0])]
