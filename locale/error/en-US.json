@@ -1,0 +1,8 @@
+{
+  "E-4-NIR-DTO-001" : "Empty ID-Card File",
+  "E-4-NIR-DTO-002" : "Empty Selfie With ID-Card File",
+  "E-4-NIR-SRV-001" : "This Not An Original ID-Card Photo",
+  "E-5-NIR-SRV-001" : "Something Error Happened When Processing Photo",
+  "E-1-NIR-AUT-001" : "Unauthorized Client"
+}
+

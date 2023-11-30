@@ -1,0 +1,7 @@
+{
+  "E-4-NIR-DTO-001" : "File KTP Kosong",
+  "E-4-NIR-DTO-002" : "File Selfie dengan KTP Kosong",
+  "E-4-NIR-SRV-001" : "Foto yang diinput bukan foto KTP asli.",
+  "E-5-NIR-SRV-001" : "Error ditemukan saat memproses foto",
+  "E-1-NIR-AUT-001" : "Akses tidak diijinkan"
+}

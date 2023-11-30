@@ -44,7 +44,7 @@ def read_value_or_key(_val: string, queue_field, queue_value, result):
             return
         elif 'JAKARTA' in _val and re.search("[0-9]+-[0-9]+-[0-9]+$", _val) is None:
             city = _val.replace('JAKARTA', '').replace(':', '').strip()
-            result["Kabupaten/Kota"] = "JAKARTA "+city
+            result["Kabupaten/Kota"] = "JAKARTA " + city
             return
         elif _val == 'PEREMPUAN' or _val == 'LAKI-LAKI':
             queue_value.append(_val)
@@ -58,7 +58,7 @@ def read_value_or_key(_val: string, queue_field, queue_value, result):
             if len(queue_value) > 0:
                 appended_value = queue_value.pop()
                 if appended_value.isnumeric() == _val.isnumeric() and appended_value.isupper() == _val.isupper():
-                    temp = appended_value+" "+_val
+                    temp = appended_value + " " + _val
                     if len(temp) <= 25:
                         queue_value.append(temp)
                     else:
@@ -86,12 +86,16 @@ def combine_value_and_field(queue_field, queue_value, result):
                     case _:
                         result[field] = '-'
                         queue_value.insert(0, value)
+            elif field == 'Tempat/Tgl Lahir':
+                if re.search("[A-Z ]+, [0-9]+-[0-9]+-[0-9]+$", value) is None:
+                    val2 = queue_value.pop(0)
+                    result[field] = value + " " + val2
+                else:
+                    result[field] = value
             else:
                 result[field] = value
         else:
             result[field] = "-"
-
-        # print(result)
 
 
 def read_google_vision_result(param: string):

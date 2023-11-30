@@ -1,8 +1,8 @@
 import cv2
 import numpy
-from service.ProfileProjection import vertical_projection_remove_picture, horizontal_projection_header
-from service.AdjustBrightness import adjust_brightness
-from service.Features import get_features
+from utility.ProfileProjection import vertical_projection_remove_picture, horizontal_projection_header
+from utility.AdjustBrightness import adjust_brightness
+from utility.Features import get_features
 import string
 
 
@@ -38,12 +38,14 @@ def preprocessing_image(path: string, with_vision=False):
     used_photo[0:header_height, 0:header_width, :] = header
     used_photo[header_height-2:body_height+header_height, 0:body_width, :] = body
 
+    people = resize[node_x:400, range_y:800 , :]
     features = get_features(resize)
 
     if with_vision:
         cv2.imshow('used', used_photo)
+        cv2.imshow('people', people)
         # cv2.imshow('header', header)
         # cv2.imshow('body', body)
         cv2.waitKey()
 
-    return used_photo, features
+    return used_photo, people, features

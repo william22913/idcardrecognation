@@ -1,6 +1,6 @@
 import numpy
 import cv2
-from service.AdjustBrightness import adjust_brightness
+from utility.AdjustBrightness import adjust_brightness
 from skimage.feature import local_binary_pattern
 from skimage.feature import graycomatrix
 from skimage.feature import graycoprops
@@ -71,12 +71,17 @@ def get_features(resize, show_image=False):
     homogeneity = graycoprops(co_matrix, 'homogeneity')
     cv2.waitKey()
 
+    # return [
+    #     numpy.float32(entropy),
+    #     numpy.float32(lbp),
+    #     numpy.float32(intensity),
+    #     numpy.float32(saturation),
+    #     numpy.float32(contrast[0][0]),
+    #     numpy.float32(correlation[0][0]),
+    #     numpy.float32(energy[0][0]),
+    #     numpy.float32(homogeneity[0][0])]
+
     return [
-        numpy.float32(entropy),
-        numpy.float32(lbp),
-        numpy.float32(intensity),
-        numpy.float32(saturation),
         numpy.float32(contrast[0][0]),
-        numpy.float32(correlation[0][0]),
-        numpy.float32(energy[0][0]),
-        numpy.float32(homogeneity[0][0])]
+        numpy.float32(entropy),
+        numpy.float32(intensity)]
